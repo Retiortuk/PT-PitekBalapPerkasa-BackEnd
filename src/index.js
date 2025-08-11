@@ -1,9 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./config/db";
-import productRoutes from "./routes/productRoutes";
-import { getProducts } from "./controllers/productController";
+import connectDB from "./config/db.js";
+import productRoutes from "./routes/productRoutes.js";
+import { getProducts } from "./controllers/productController.js";
 
 dotenv.config();
 connectDB();
@@ -20,4 +20,4 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, ()=> console.log(`Server jalan di port ${{PORT}}`));
+app.listen(PORT, ()=> console.log(`Server jalan di port ${PORT}`));

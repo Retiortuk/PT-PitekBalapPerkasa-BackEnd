@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "- Database + API {\r     Isi Database:\r     - Pengguna/User\r     - Kandang\r     - Stok\r     - Riwayat Transaksi\r     - Verifikasi Pengguna\r };",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
