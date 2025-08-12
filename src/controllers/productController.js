@@ -1,5 +1,6 @@
 import Product from "../models/Product.js";
 
+//GET
 export const getProducts = async(req, res) => {
     try {
         const products = await Product.find();
@@ -10,6 +11,7 @@ export const getProducts = async(req, res) => {
     }
 };
 
+// POST
 export const createProducts = async(req, res) => {
     try {
         const product = new Product(req.body);
@@ -18,5 +20,20 @@ export const createProducts = async(req, res) => {
 
     } catch (err) {
         res.status(400).json({message: err.message});
+    }
+};
+
+// DELETE
+export const deleteProduct = async(req, res) => {
+    try {
+        const deletedProduct = Product.findByIdAndDelete(req.params.id);
+
+        if (!deletedProduct) {
+            return res.status(404).json({message: "Product Not Found"});
+        }
+
+        res.json({message: "Product Deleted Succesfully"});
+    } catch (err) {
+        res.status(500).json({message: err.message});
     }
 };
