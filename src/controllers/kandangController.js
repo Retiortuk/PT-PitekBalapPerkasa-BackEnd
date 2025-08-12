@@ -45,3 +45,20 @@ export const updateKandang = async (req, res) => {
 };
 
 // DELETE
+export const deleteKandang = async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({message: "Invalid ID Format"});
+        }
+
+        const deletedKandang = await Kandang.findByIdAndDelete(req.params.id);
+
+        if (!deletedKandang) {
+            return res.status(400).json({message: "Kandang Not Found"});
+        }
+        res.json({message: "Kandang Deleted Successfully"});
+
+    } catch (err) {
+        return res.status(500).json({message: err.message});
+    }
+};
