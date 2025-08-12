@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import productRoutes from "./routes/productRoutes.js";
 import userRoute from "./routes/userRoute.js";
 import kandangRoutes from "./routes/kandangRoutes.js";
+import stokRoutes from "./routes/stokRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/products", productRoutes);
 app.use("/users", userRoute);
 app.use("/kandang", kandangRoutes);
+app.use("/stok", stokRoutes);
 
 app.get("/", (req, res) => {
     res.send("API Sedang Berjalan...");
