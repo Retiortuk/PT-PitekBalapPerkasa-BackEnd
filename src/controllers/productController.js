@@ -24,6 +24,31 @@ export const createProducts = async(req, res) => {
     }
 };
 
+// PATCH
+export const updateProduct = async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({message: "Invalid ID Fromat"});
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {new: true}
+        );
+
+        if (!updatedProduct) {
+            return res.status(400).json({message: "Product Not Found"});
+        }
+        
+        res.json(updatedProduct);
+
+    } catch (err) {
+        return res.status(400).json({message: err.message});
+    }
+};
+
+
 // DELETE
 export const deleteProduct = async(req, res) => {
     try {

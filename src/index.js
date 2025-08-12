@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
 import productRoutes from "./routes/productRoutes.js";
+import userRoute from "./routes/userRoute.js";
 
 
 dotenv.config();
@@ -14,6 +15,7 @@ app.use(express.json());
 
 // Routes nya
 app.use("/products", productRoutes);
+app.use("/users", userRoute);
 
 app.get("/", (req, res) => {
     res.send("API Sedang Berjalan...");
