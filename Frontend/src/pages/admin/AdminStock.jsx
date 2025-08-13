@@ -1,0 +1,143 @@
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import { motion } from 'framer-motion';
+import { PlusCircle, Edit, Trash2 } from 'lucide-react';
+import AdminSidebar from '@/components/AdminSidebar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from '@/components/ui/use-toast';
+
+const AdminStock = () => {
+  const [products, setProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState(null);
+
+  const initialFormState = {
+    id: null, location: '', kandang_desc: '', address: '', maps_link: '',
+    pic: { ts_name: '', ts_phone: '', fo_name: '', fo_phone: '' },
+    weight: '', price: '', stock: '', condition: 'Sehat', sellingMethod: 'kg', initialStock: 0
+  };
+  const [formData, setFormData] = useState(initialFormState);
+
+  useEffect(() => {
+    try {
+      const savedProducts = JSON.parse(localStorage.getItem('admin_products') || '[]');
+      setProducts(savedProducts);
+    } catch (error) {
+      console.error("Failed to load products from localStorage", error);
+    }
+  }, []);
+
+  const saveProductsToLocalStorage = (updatedProducts) => {
+    localStorage.setItem('admin_products', JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+  };
+
+  const openModal = (product = null) => {
+    if (product) {
+      setCurrentProduct(product);
+      setFormData({ ...product, pic: product.pic || { ts_name: '', ts_phone: '', fo_name: '', fo_phone: '' } });
+    } else {
+      setCurrentProduct(null);
+      setFormData(initialFormState);
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (currentProduct) {
+      const updatedProducts = products.map(p => p.id === currentProduct.id ? { ...formData, initialStock: p.initialStock } : p);
+      saveProductsToLocalStorage(updatedProducts);
+      toast({ title: "Sukses!", description: "Stok berhasil diperbarui." });
+    } else {
+      const newProduct = { ...formData, id: `prod_${Date.now()}`, initialStock: Number(formData.stock) };
+      const updatedProducts = [...products, newProduct];
+      saveProductsToLocalStorage(updatedProducts);
+      toast({ title: "Sukses!", description: "Stok baru berhasil ditambahkan." });
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleDelete = (productId) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus stok ini?')) {
+      const updatedProducts = products.filter(p => p.id !== productId);
+      saveProductsToLocalStorage(updatedProducts);
+      toast({ title: "Stok Dihapus", variant: "destructive" });
+    }
+  };
+  
+  const getConditionClass = (condition) => {
+    const lowerCaseCondition = (condition || '').toLowerCase();
+    if (lowerCaseCondition.includes('sakit')) return 'bg-red-100 text-red-800';
+    if (lowerCaseCondition.includes('penjarangan')) return 'bg-yellow-100 text-yellow-800';
+    if (lowerCaseCondition.includes('sehat')) return 'bg-green-100 text-green-800';
+    return 'bg-gray-100 text-gray-800';
+  };
+
+  return (
+    <>
+      <Helmet><title>Kelola Stok - Admin</title></Helmet>
+      <div className="flex min-h-screen bg-gray-100">
+        <AdminSidebar />
+        <main className="flex-1 p-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold text-gray-800">Kelola Stok Kandang</h1>
+              <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogTrigger asChild><Button className="btn-gradient"><PlusCircle className="mr-2 h-5 w-5" /> Tambah Stok</Button></DialogTrigger>
+                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                    <DialogHeader><DialogTitle>{currentProduct ? 'Edit Stok' : 'Tambah Stok Baru'}</DialogTitle></DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div><Label>Nama Kandang</Label><Input name="location" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} required /></div>
+                          <div><Label>Deskripsi Kandang</Label><Input name="kandang_desc" value={formData.kandang_desc} onChange={e => setFormData({...formData, kandang_desc: e.target.value})} /></div>
+                        </div>
+                        <div><Label>Alamat Lengkap</Label><Textarea name="address" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} /></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><Label>Ukuran (cth: 0.8-1.0)</Label><Input name="weight" value={formData.weight} onChange={e => setFormData({...formData, weight: e.target.value})} required /></div>
+                            <div><Label>Stok Awal (Ekor)</Label><Input name="stock" type="number" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value, initialStock: currentProduct ? formData.initialStock : Number(e.target.value)})} required /></div>
+                            <div><Label>Metode Jual</Label><Select onValueChange={v => setFormData({...formData, sellingMethod: v})} value={formData.sellingMethod}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent><SelectItem value="kg">Per Kg</SelectItem><SelectItem value="ekor">Per Ekor</SelectItem></SelectContent></Select></div>
+                            <div><Label>Harga per Satuan</Label><Input name="price" type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} required /></div>
+                        </div>
+                        <div><Label>Kondisi</Label><Select onValueChange={v => setFormData({...formData, condition: v})} value={formData.condition}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent><SelectItem value="Sehat">Sehat</SelectItem><SelectItem value="Penjarangan">Penjarangan</SelectItem><SelectItem value="Sakit">Sakit</SelectItem></SelectContent></Select></div>
+                        <div className="flex justify-end space-x-2 pt-4"><Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Batal</Button><Button type="submit">{currentProduct ? 'Simpan' : 'Tambah'}</Button></div>
+                    </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <Card className="shadow-lg">
+              <CardHeader><CardTitle>Daftar Stok Saat Ini</CardTitle></CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead><tr className="border-b"><th className="p-3 text-left">Kandang</th><th className="p-3 text-left">Ukuran</th><th className="p-3 text-right">Harga</th><th className="p-3 text-right">Stok</th><th className="p-3 text-center">Kondisi</th><th className="p-3 text-center">Aksi</th></tr></thead>
+                    <tbody>
+                      {products.length > 0 ? products.map(product => (
+                        <tr key={product.id} className="border-b hover:bg-gray-50">
+                          <td className="p-3 font-medium">{product.location}</td>
+                          <td className="p-3">{product.weight} kg</td>
+                          <td className="p-3 text-right">Rp {Number(product.price).toLocaleString('id-ID')}/{product.sellingMethod}</td>
+                          <td className="p-3 text-right">{Number(product.stock).toLocaleString('id-ID')} ekor</td>
+                          <td className="p-3 text-center"><span className={`px-2 py-1 text-xs rounded-full ${getConditionClass(product.condition)}`}>{product.condition}</span></td>
+                          <td className="p-3 text-center space-x-2"><Button size="sm" variant="outline" onClick={() => openModal(product)}><Edit className="h-4 w-4" /></Button><Button size="sm" variant="destructive" onClick={() => handleDelete(product.id)}><Trash2 className="h-4 w-4" /></Button></td>
+                        </tr>
+                      )) : (<tr><td colSpan="6" className="text-center py-10 text-gray-500">Belum ada data stok.</td></tr>)}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </main>
+      </div>
+    </>
+  );
+};
+
+export default AdminStock;
