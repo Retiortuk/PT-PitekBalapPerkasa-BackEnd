@@ -30,6 +30,7 @@ import AdminChatPage from '@/pages/admin/AdminChatPage';
 import AdminVerification from '@/pages/admin/AdminVerification';
 import CartPage from '@/pages/CartPage';
 import PrePaymentPage from '@/pages/PrePaymentPage';
+import AdminRoute from './pages/admin/AdminRoute';
 
 function App() {
   return (
@@ -59,16 +60,16 @@ function App() {
               <Route path="/chat/:contactId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
               <Route path="/transactions" element={<ProtectedRoute><TransactionsPage /></ProtectedRoute>} />
 
-              <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/admin/transactions" element={<ProtectedRoute requiredRole="admin"><AdminTransactions /></ProtectedRoute>} />
-              <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminUsers /></ProtectedRoute>} />
-              <Route path="/admin/stock" element={<ProtectedRoute requiredRole="admin"><AdminStock /></ProtectedRoute>} />
-              <Route path="/admin/approvals" element={<ProtectedRoute requiredRole="admin"><AdminApprovals /></ProtectedRoute>} />
-              <Route path="/admin/coops" element={<ProtectedRoute requiredRole="admin"><AdminCoops /></ProtectedRoute>} />
-              <Route path="/admin/chat" element={<ProtectedRoute requiredRole="admin"><AdminChatPage /></ProtectedRoute>} />
-              <Route path="/admin/chat/:userId" element={<ProtectedRoute requiredRole="admin"><AdminChatPage /></ProtectedRoute>} />
-              <Route path="/admin/verification" element={<ProtectedRoute requiredRole="admin"><AdminVerification /></ProtectedRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute requiredRole="user"><UserDashboard /></ProtectedRoute>} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/admin/transactions" element={<AdminRoute><AdminTransactions /></AdminRoute>} />
+              <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+              <Route path="/admin/stock" element={<AdminRoute><AdminStock /></AdminRoute>} />
+              <Route path="/admin/approvals" element={<AdminRoute><AdminApprovals /></AdminRoute>} />
+              <Route path="/admin/coops" element={<AdminRoute><AdminCoops /></AdminRoute>} />
+              <Route path="/admin/chat" element={<AdminRoute><AdminChatPage /></AdminRoute>} />
+              <Route path="/admin/chat/:userId" element={<AdminRoute><AdminChatPage /></AdminRoute>} />
+              <Route path="/admin/verification" element={<AdminRoute><AdminVerification /></AdminRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
             </Routes>
           </div>
         </ChatProvider>

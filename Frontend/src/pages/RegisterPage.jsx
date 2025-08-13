@@ -107,11 +107,11 @@ const RegisterPage = () => {
                     <Label>Jenis Akun</Label>
                     <div className="grid grid-cols-2 gap-3">
                       {/* Pembeli */}
-                      <button type="button" onClick={() => setFormData({ ...formData, role: 'Pembeli' })} className={`p-4 rounded-lg border-2 flex flex-col items-center justify-center transition-all ${formData.role === 'user' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 hover:border-gray-300'}`}>
+                      <button type="button" onClick={() => setFormData({ ...formData, role: 'Pembeli' })} className={`p-4 rounded-lg border-2 flex flex-col items-center justify-center transition-all ${formData.role === 'Pembeli' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 hover:border-gray-300'}`}>
                         <User className="h-6 w-6 mb-1" /> <span className="text-sm font-medium">Pembeli</span>
                       </button>
                       {/* Peternak */}
-                      <button type="button" onClick={() => setFormData({ ...formData, role: 'Peternak' })} className={`p-4 rounded-lg border-2 flex flex-col items-center justify-center transition-all ${formData.role === 'admin' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-gray-200 hover:border-gray-300'}`}>
+                      <button type="button" onClick={() => setFormData({ ...formData, role: 'Peternak' })} className={`p-4 rounded-lg border-2 flex flex-col items-center justify-center transition-all ${formData.role === 'Peternak' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-gray-200 hover:border-gray-300'}`}>
                         <Building className="h-6 w-6 mb-1" /> <span className="text-sm font-medium">Peternak</span>
                       </button>
                     </div>

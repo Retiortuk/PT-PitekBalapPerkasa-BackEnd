@@ -68,7 +68,7 @@ const LoginPage = () => {
           description: `Selamat datang, ${data.user.namaLengkap}!`
         });
 
-        if(data.user.jenisAkun === 'Peternak') {
+        if(data.user.jenisAkun === 'Admin') {
           navigate('/admin')
         } else {
           navigate('/dashboard')
