@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    jenisAkun: {type: String, enum: ["Pembeli", "Peternak"], required: true},
+    jenisAkun: {type: String, enum: ["Pembeli", "Peternak", "Admin"], required: true},
     namaLengkap: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
