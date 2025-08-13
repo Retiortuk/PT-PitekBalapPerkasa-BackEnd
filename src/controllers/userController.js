@@ -1,5 +1,32 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+
+// Login
+export const loginUser = async(req, res) => {
+    const { email, password} = req.body;
+
+    try {
+        // Cek User Terdaftarkah?
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({message: "User Tidak Ditemukan"});
+
+        // Cek Password
+        const isPassworValid = await bcrypt.compare(password, user.password);
+        if (!isPassworValid) return res.status(400).json({message: "Password Salah"});
+
+        const token = jwt.sign(
+            {id: user._id, email: user.email, role: user.role},
+            process.env.JWT_SECRET,
+            {expiresIn: "1d"}
+        );
+        return res.status(200).json({message: "Login Berhasil", token});
+
+    } catch (err) {
+        return res.status(500).json({message: err.message});
+    }
+};
 
 // GET
 export const getUsers = async (req, res) => {
