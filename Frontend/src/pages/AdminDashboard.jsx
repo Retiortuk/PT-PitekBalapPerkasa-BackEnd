@@ -92,7 +92,7 @@ const AdminDashboard = () => {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">Dasbor Admin</h1>
-              <p className="text-gray-500">Selamat datang kembali, {user?.name}!</p>
+              <p className="text-gray-500">Selamat datang kembali, {user.namaLengkap}!</p>
             </div>
             <div className="relative">
               <Bell className="text-gray-600 h-6 w-6" />

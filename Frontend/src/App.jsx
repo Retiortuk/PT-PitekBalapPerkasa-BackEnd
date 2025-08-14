@@ -31,6 +31,7 @@ import AdminVerification from '@/pages/admin/AdminVerification';
 import CartPage from '@/pages/CartPage';
 import PrePaymentPage from '@/pages/PrePaymentPage';
 import AdminRoute from './pages/admin/AdminRoute';
+import userRoute  from './pages/userRoute';
 
 function App() {
   return (
@@ -69,7 +70,7 @@ function App() {
               <Route path="/admin/chat" element={<AdminRoute><AdminChatPage /></AdminRoute>} />
               <Route path="/admin/chat/:userId" element={<AdminRoute><AdminChatPage /></AdminRoute>} />
               <Route path="/admin/verification" element={<AdminRoute><AdminVerification /></AdminRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<userRoute><UserDashboard /> </userRoute>} />
             </Routes>
           </div>
         </ChatProvider>

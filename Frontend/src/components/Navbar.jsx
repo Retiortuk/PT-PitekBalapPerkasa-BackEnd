@@ -84,7 +84,7 @@ const Navbar = () => {
                       <User className="mr-2 h-4 w-4" />
                       <span>Profil</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate(user.role === 'admin' ? '/admin' : '/dashboard')}>
+                    <DropdownMenuItem onClick={() => navigate(user.jenisAkun === 'Admin' ? '/admin' : '/dashboard')}>
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       <span>Dashboard</span>
                     </DropdownMenuItem>
