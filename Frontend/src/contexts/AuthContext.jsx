@@ -1,39 +1,37 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
+    if(storedToken && storedUser) {
+      setToken(storedToken);
+      setUser(JSON.parse(storedUser));
     }
     setLoading(false);
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+  const login = (data) => {
+    setUser(data.user);
+    setToken(data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('token', data.token);
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem('user');
-    // Also clear associated cart for safety
-    if (user) {
-      localStorage.removeItem(`cart_${user.id}`);
-    }
+    localStorage.removeItem('token');
   };
 
   const updateUser = (updatedData) => {
@@ -68,6 +66,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    token,
     login,
     logout,
     register,
@@ -77,7 +76,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

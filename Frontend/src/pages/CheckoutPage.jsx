@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useCart } from '@/contexts/CartContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.jsx';
 import { toast } from '@/components/ui/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 

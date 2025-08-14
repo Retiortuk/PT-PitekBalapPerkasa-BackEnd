@@ -4,7 +4,7 @@ import { Send, Paperclip, Search, File, Image } from 'lucide-react';
 import AdminSidebar from '@/components/AdminSidebar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth.jsx';
 import { useChat } from '@/contexts/ChatContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';

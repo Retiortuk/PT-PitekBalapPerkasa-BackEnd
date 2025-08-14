@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.jsx';
 
 const OrderReceipt = () => {
   const { orderId } = useParams();

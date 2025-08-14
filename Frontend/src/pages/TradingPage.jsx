@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.jsx';
 import { useCart } from '@/contexts/CartContext';
 import { useChat } from '@/contexts/ChatContext';
 import { toast } from '@/components/ui/use-toast';

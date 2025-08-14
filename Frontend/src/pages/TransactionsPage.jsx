@@ -6,7 +6,7 @@ import { Eye, Banknote, FileText, Star, ArrowLeft } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.jsx';
 
 const TransactionsPage = () => {
   const { user } = useAuth();

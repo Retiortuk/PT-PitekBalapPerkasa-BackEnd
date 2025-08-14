@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingCart, User, LogOut, Menu, X, LayoutDashboard } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.jsx';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import {

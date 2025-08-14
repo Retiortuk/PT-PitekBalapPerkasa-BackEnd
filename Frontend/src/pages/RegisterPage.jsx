@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.jsx';
 import { toast } from '@/components/ui/use-toast';
 
 const RegisterPage = () => {
@@ -18,7 +18,6 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -68,12 +67,12 @@ const RegisterPage = () => {
         })
       });
       
-      if(!res.ok) throw new Error('Gagal Registrasi');
+      if(!res.ok) throw new Error( data.meessage |'Gagal Registrasi');
 
       const data = await res.json();
 
-      toast({ title: "Registrasi Berhasil!", description: `Selamat datang, ${data.namaLengkap}!` });
-      navigate(formData.role === 'admin' ? '/admin' : '/dashboard');
+      toast({ title: "Registrasi Berhasil!", description: 'Silahkan Login Dengan Akun Baru Anda' });
+      navigate('/login');
     } catch (error) {
       toast({ title: "Error", description: "Terjadi kesalahan saat registrasi", variant: "destructive" });
     } finally {

@@ -6,7 +6,7 @@ import { User, Mail, Phone, MapPin, Edit, Shield, CheckCircle, AlertTriangle, Cl
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.jsx';
 import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';

@@ -14,11 +14,12 @@ import {
 } from 'lucide-react';
 import AdminSidebar from '@/components/AdminSidebar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth.jsx';
 import { Button } from '@/components/ui/button';
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalCoops: 0,
@@ -29,24 +30,46 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const coops = JSON.parse(localStorage.getItem('admin_coops') || '[]');
-    const stock = JSON.parse(localStorage.getItem('admin_products') || '[]');
-    const transactions = JSON.parse(localStorage.getItem('orders') || '[]');
-    
-    const totalStock = stock.reduce((sum, item) => sum + Number(item.stock || 0), 0);
-    const pendingApprovals = transactions.filter(t => t.status === 'pending_approval').length;
-    const pendingVerifications = users.filter(u => u.verificationStatus === 'pending').length;
+    const fetchDashboardAdmin = async() => {
+      if(!token) {
+        setLoading(false)
+        return;
+      }
 
-    setStats({
-      totalUsers: users.length,
-      totalCoops: coops.length,
-      totalStock: totalStock,
-      totalTransactions: transactions.length,
-      pendingApprovals,
-      pendingVerifications,
-    });
-  }, []);
+      try { // Tambahkan sisah res nya di dalam array
+        const [userRes] = await Promise.all([
+          // Get users total
+          fetch('http://localhost:5000/users', {
+            headers : {'Authorization': `Bearer ${token}`}
+          }),
+          // Get Stok Total
+          //dll.....
+        ]);
+
+        if(!userRes.ok) throw new Error("Gagal Mendapatkan Total User"); // Total User Error
+        // Total Stok Error dll......
+
+        const usersData = await userRes.json();
+        // const stokData = await dataStok.json(); dll dan seterusnya....
+
+        const pendingVerifications = usersData.filter(u => u.verificationStatus === 'pending').length;
+        setStats({
+          totalUsers: usersData.length,
+          totalCoops: 0,
+          totalStock: 0,
+          totalTransactions: 0,
+          pendingApprovals: 0,
+          pendingVerifications: 0
+        });
+      } catch (error) {
+        toast({title: "Error", description: error.message, variant: "destructive"})
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardAdmin();
+  }, [token]);
 
   const StatCard = ({ icon, title, value, description, path, notification, color }) => (
     <motion.div
