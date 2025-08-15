@@ -107,11 +107,19 @@ const AdminStock = () => {
     }
   };
 
-  const handleDelete = (productId) => {
+  const handleDelete = async(productId) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus stok ini?')) {
-      const updatedProducts = products.filter(p => p.id !== productId);
-      saveProductsToLocalStorage(updatedProducts);
-      toast({ title: "Stok Dihapus", variant: "destructive" });
+      try {
+        const response =  await fetch(`http://localhsot:5000/stok/${productId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}`}
+        });
+        if(!response.ok) throw new Error("Gagal Menghapus Stok");
+        setProducts(products.filter(p => p._id !== productId));
+        toast({title: "Berhasil Menghapus!", description: "Stok Berhasil Dihapus", variant: "success"})
+      } catch (error) {
+        toast({title: "Error", description: error.message, variant: "destructive"})
+      }
     }
   };
   
