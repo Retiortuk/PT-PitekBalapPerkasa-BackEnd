@@ -151,7 +151,7 @@ const AdminStock = () => {
                         </div>
                         <div><Label>Alamat Lengkap</Label><Textarea name="address" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} /></div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
-                            <div><Label>Ukuran (cth: 0.8-1.0)</Label><Input name="weight" value={formData.size} onChange={e => setFormData({...formData, size: e.target.value})} required /></div>
+                            <div><Label>Bobot Rata-rata (cth: 0.8-1.0 Kg)</Label><Input name="weight" value={formData.size} onChange={e => setFormData({...formData, size: e.target.value})} required /></div>
                             <div><Label>Stok Awal (Ekor)</Label><Input name="stock" type="number" value={formData.stock} onChange={e => setFormData({...formData, stock: e.target.value, initialStock: currentProduct ? formData.initialStock : Number(e.target.value)})} required /></div>
                             <div><Label>Metode Jual</Label><Select onValueChange={v => setFormData({...formData, sellingMethod: v})} value={formData.sellingMethod}><SelectTrigger><SelectValue/></SelectTrigger><SelectContent><SelectItem value="Per Kg">Per Kg</SelectItem><SelectItem value="Per Ekor">Per Ekor</SelectItem></SelectContent></Select></div>
                             <div><Label>Harga per Satuan</Label><Input name="price" type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} required /></div>
@@ -162,37 +162,80 @@ const AdminStock = () => {
                 </DialogContent>
               </Dialog>
             </div>
-            <Card className="shadow-lg">
-              <CardHeader><CardTitle>Daftar Stok Saat Ini</CardTitle></CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle>Daftar Stok Saat Ini</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {/* Container ini yang membuat tabel bisa digulir ke samping di layar kecil */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm"> {/* Memberi ukuran teks dasar */}
+                      <thead>
                         <tr className="border-b">
-                          <th className="p-3 text-left">Kandang</th>
-                          <th className="p-3 text-left">Ukuran</th> 
-                          <th className="p-3 text-right">Harga</th>
-                          <th className="p-3 text-right">Stok</th>
-                          <th className="p-3 text-center">Kondisi</th>
-                          <th className="p-3 text-center">Aksi</th>
+                          {/* Terapkan perataan teks yang konsisten di header */}
+                          <th className="p-3 text-left font-semibold">Kandang</th>
+                          <th className="p-3 text-left font-semibold max-w-[305px]">Lokasi</th> {/* CONTOH KOLOM BARU */}
+                          <th className="p-3 text-left font-semibold">Ukuran</th>
+                          <th className="p-3 text-right font-semibold">Harga</th> {/* Rata kanan untuk angka */}
+                          <th className="p-3 text-right font-semibold">Stok</th> {/* Rata kanan untuk angka */}
+                          <th className="p-3 text-center font-semibold">Kondisi</th>
+                          <th className="p-3 text-center font-semibold">Aksi</th>
                         </tr>
                       </thead>
-                    <tbody>
-                      {products.length > 0 ? products.map(product => (
-                        <tr key={product._id} className="border-b hover:bg-gray-50">
-                          <td className="p-3 font-medium">{product.namaKandang}</td>
-                          <td className="p-3">{product.ukuran} Cm</td>
-                          <td className="p-3 text-right">Rp {Number(product.hargaSatuan).toLocaleString('id-ID')} /{product.metodeJual}</td>
-                          <td className="p-3 text-right">{Number(product.stokAwal).toLocaleString('id-ID')} ekor</td>
-                          <td className="p-3 text-center"><span className={`px-2 py-1 text-xs rounded-full ${getConditionClass(product.condition)}`}>{product.kondisi}</span></td>
-                          <td className="p-3 text-center space-x-2"><Button size="sm" variant="outline" onClick={() => openModal(product)}><Edit className="h-4 w-4" /></Button><Button size="sm" variant="destructive" onClick={() => handleDelete(product._id)}><Trash2 className="h-4 w-4" /></Button></td>
-                        </tr>
-                      )) : (<tr><td colSpan="6" className="text-center py-10 text-gray-500">Belum ada data stok.</td></tr>)}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+                      <tbody>
+                        {/* Tampilkan loading atau data */}
+                        {loading ? (
+                          <tr><td colSpan="7" className="text-center py-10 text-gray-500">Memuat data...</td></tr>
+                        ) : products.length > 0 ? products.map(product => (
+                          <tr key={product._id} className="border-b hover:bg-gray-50">
+                            {/* Sel untuk data Kandang */}
+                            <td className="p-3 align-top"> {/* align-top agar rapi jika teks panjang */}
+                              <div className="font-semibold text-gray-800">{product.namaKandang}</div>
+                            </td>
+                            
+                            {/* Sel untuk data Lokasi*/}
+                            <td className="p-3 text-left align-top max-w-[305px]">
+                              <div className="font-medium text-gray-800">
+                                {product.alamatLengkap}
+                              </div>
+                            </td>
+
+                            {/* Sel untuk data Ukuran */}
+                            <td className="p-3 text-left align-top font-semibold">{product.ukuran} Kg</td>
+                            
+                            {/* Sel untuk data Harga (RATA KANAN) */}
+                            <td className="p-3 text-right align-top font-semibold">
+                              Rp {Number(product.hargaSatuan).toLocaleString('id-ID')} / {product.metodeJual}
+                            </td>
+                            
+                            {/* Sel untuk data Stok (RATA KANAN) */}
+                            <td className="p-3 text-right align-top font-semibold">
+                              {Number(product.stokAwal).toLocaleString('id-ID')} ekor
+                            </td>
+                            
+                            {/* Sel untuk data Kondisi (RATA TENGAH) */}
+                            <td className="p-3 text-center align-top">
+                              <span className={`px-2 py-1 text-xs rounded-full ${getConditionClass(product.kondisi)}`}>
+                                {product.kondisi}
+                              </span>
+                            </td>
+                            
+                            {/* Sel untuk Tombol Aksi (RATA TENGAH) */}
+                            <td className="p-3 text-center align-top">
+                              <div className="flex justify-center items-center space-x-2">
+                                <Button size="sm" variant="outline" onClick={() => openModal(product)}><Edit className="h-4 w-4" /></Button>
+                                <Button size="sm" variant="destructive" onClick={() => handleDelete(product._id)}><Trash2 className="h-4 w-4" /></Button>
+                              </div>
+                            </td>
+                          </tr>
+                        )) : (
+                          <tr><td colSpan="7" className="text-center py-10 text-gray-500">Belum ada data stok.</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
           </motion.div>
         </main>
       </div>

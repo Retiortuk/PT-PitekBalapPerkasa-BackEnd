@@ -37,12 +37,15 @@ const AdminDashboard = () => {
       }
 
       try { // Tambahkan sisah res nya di dalam array
-        const [userRes, coopsRes] = await Promise.all([
+        const [userRes, coopsRes, stoksRes] = await Promise.all([
           // Get users total
           fetch('http://localhost:5000/users', {
             headers : {'Authorization': `Bearer ${token}`}
           }),
           fetch('http://localhost:5000/kandang', {
+            headers : {'Authorization': `Bearer ${token}`}
+          }),
+          fetch('http://localhost:5000/stok', {
             headers : {'Authorization': `Bearer ${token}`}
           })
           // Get Stok Total
@@ -51,17 +54,20 @@ const AdminDashboard = () => {
 
         if(!userRes.ok) throw new Error("Gagal Mendapatkan Total User"); 
         if(!coopsRes.ok) throw new Error("Gagal Mendapatkan Total Kandang");
+        if(!stoksRes.ok) throw new Error("Gagal Mendapatkan Total Kandang");
         // Total Stok Error dll......
 
         const usersData = await userRes.json();
         const coopsData = await coopsRes.json();
+        const stokData = await stoksRes.json();
+        const totalEkorAyam = stokData.reduce((total, item) => total + item.stokAwal, 0)
         // const stokData = await dataStok.json(); dll dan seterusnya....
 
         // const pendingVerifications = usersData.filter(u => u.verificationStatus === 'pending').length;
         setStats({
           totalUsers: usersData.length,
           totalCoops: coopsData.length,
-          totalStock: 0,
+          totalStock: totalEkorAyam,
           totalTransactions: 0,
           pendingApprovals: 0,
           pendingVerifications: 0
@@ -133,7 +139,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <StatCard icon={<Package className="h-5 w-5 text-gray-500" />} title="Total Stok Ayam" value={`${stats.totalStock.toLocaleString('id-ID')} Ekor`} description="Jumlah semua stok di kandang" path="/admin/stock" color="border-blue-500" />
+            <StatCard icon={<Package className="h-5 w-5 text-gray-500" />} title="Total Stok Ayam" value={`${stats.totalStock} Ekor`} description="Jumlah semua stok di kandang" path="/admin/stock" color="border-blue-500" />
             <StatCard icon={<ShoppingCart className="h-5 w-5 text-gray-500" />} title="Total Transaksi" value={`${stats.totalTransactions} Transaksi`} description="Semua transaksi yang tercatat" path="/admin/transactions" color="border-green-500" />
             <StatCard icon={<Users className="h-5 w-5 text-gray-500" />} title="Total Pengguna" value={`${stats.totalUsers} Pengguna`} description="Jumlah pengguna terdaftar" path="/admin/users" color="border-purple-500" />
             <StatCard icon={<CheckSquare className="h-5 w-5 text-gray-500" />} title="Persetujuan SPPA" value={`${stats.pendingApprovals} Butuh Aksi`} description="Transaksi menunggu persetujuan" path="/admin/approvals" notification={stats.pendingApprovals} color="border-red-500" />
