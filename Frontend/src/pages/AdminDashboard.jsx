@@ -37,25 +37,30 @@ const AdminDashboard = () => {
       }
 
       try { // Tambahkan sisah res nya di dalam array
-        const [userRes] = await Promise.all([
+        const [userRes, coopsRes] = await Promise.all([
           // Get users total
           fetch('http://localhost:5000/users', {
             headers : {'Authorization': `Bearer ${token}`}
           }),
+          fetch('http://localhost:5000/kandang', {
+            headers : {'Authorization': `Bearer ${token}`}
+          })
           // Get Stok Total
           //dll.....
         ]);
 
-        if(!userRes.ok) throw new Error("Gagal Mendapatkan Total User"); // Total User Error
+        if(!userRes.ok) throw new Error("Gagal Mendapatkan Total User"); 
+        if(!coopsRes.ok) throw new Error("Gagal Mendapatkan Total Kandang");
         // Total Stok Error dll......
 
         const usersData = await userRes.json();
+        const coopsData = await coopsRes.json();
         // const stokData = await dataStok.json(); dll dan seterusnya....
 
         // const pendingVerifications = usersData.filter(u => u.verificationStatus === 'pending').length;
         setStats({
           totalUsers: usersData.length,
-          totalCoops: 0,
+          totalCoops: coopsData.length,
           totalStock: 0,
           totalTransactions: 0,
           pendingApprovals: 0,
