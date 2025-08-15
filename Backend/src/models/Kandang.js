@@ -8,6 +8,6 @@ const kandangSchema = new mongoose.Schema({
         nama: { type: String, required: true},
         nomorTelepon: { type: String, required: true}
     }
-}, {Timestamps: true});
+}, {timestamps: true});
 
 export default mongoose.model("Kandang", kandangSchema);
