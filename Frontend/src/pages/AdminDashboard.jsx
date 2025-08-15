@@ -52,7 +52,7 @@ const AdminDashboard = () => {
         const usersData = await userRes.json();
         // const stokData = await dataStok.json(); dll dan seterusnya....
 
-        const pendingVerifications = usersData.filter(u => u.verificationStatus === 'pending').length;
+        // const pendingVerifications = usersData.filter(u => u.verificationStatus === 'pending').length;
         setStats({
           totalUsers: usersData.length,
           totalCoops: 0,

@@ -50,7 +50,7 @@ const UserDashboard = () => {
           <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Dasbor Pengguna</h1>
-              <p className="text-gray-600">Selamat datang kembali, {user?.name}!</p>
+              <p className="text-gray-600">Selamat datang kembali, {user.namaLengkap}!</p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={() => navigate('/chat')}>

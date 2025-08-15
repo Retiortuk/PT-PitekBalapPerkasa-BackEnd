@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, FolderMinus } from 'lucide-react';
 import AdminSidebar from '@/components/AdminSidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,17 +9,36 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '../../hooks/useAuth';
 
 const AdminCoops = () => {
   const [coops, setCoops] = useState([]);
+  const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCoop, setEditingCoop] = useState(null);
-  const [formData, setFormData] = useState({ name: '', address: '', capacity: '', contact: '' });
-
+  const [formData, setFormData] = useState({ name: '', address: '', capacity: '', contactName: '', contactPhone: '' });
+  const { token } = useAuth();
   useEffect(() => {
-    const savedCoops = JSON.parse(localStorage.getItem('admin_coops') || '[]');
-    setCoops(savedCoops);
-  }, []);
+    const fetchCoops = async() => {
+      if(!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const response = await fetch('http://localhost:5000/kandang', {
+          headers: {'Authorization': `Bearer ${token}`}
+        });
+        if(!response.ok) throw new Error('Gagal Mengambil Data Kandang');
+        const data = await response.json()
+        setCoops(data);
+      } catch (error) {
+        toast({title: "Error", description: error.message, variant: "destructive"})
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCoops();
+  }, [token]);
 
   const saveCoops = (updatedCoops) => {
     localStorage.setItem('admin_coops', JSON.stringify(updatedCoops));
@@ -28,7 +47,7 @@ const AdminCoops = () => {
 
   const handleOpenModal = (coop = null) => {
     setEditingCoop(coop);
-    setFormData(coop ? { name: coop.name, address: coop.address, capacity: coop.capacity, contact: coop.contact } : { name: '', address: '', capacity: '', contact: '' });
+    setFormData(coop ? { name: coop.name, address: coop.address, capacity: coop.capacity, contactName: coop.contactName, contactPhone: coop.contactPhone } : { name: '', address: '', capacity: '', contactName: '', contactPhone: ''});
     setIsModalOpen(true);
   };
 
@@ -37,18 +56,45 @@ const AdminCoops = () => {
     setEditingCoop(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingCoop) {
-      const updatedCoops = coops.map(c => c.id === editingCoop.id ? { ...c, ...formData } : c);
-      saveCoops(updatedCoops);
-      toast({ title: "Kandang Diperbarui", description: "Data kandang mitra berhasil diperbarui." });
-    } else {
-      const newCoop = { id: Date.now(), ...formData };
-      saveCoops([...coops, newCoop]);
-      toast({ title: "Kandang Ditambahkan", description: "Kandang mitra baru berhasil ditambahkan." });
+    const url = editingCoop
+      ? `http://localhost:5000/kandang/${editingCoop._id}`
+      : 'http://localhost:5000/kandang';
+    const method = editingCoop ? 'PATCH' : 'POST';
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers : {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          namaKandang: formData.name,
+          alamat: formData.address,
+          kapasitas: formData.capacity,
+          kontak : {
+            nama: formData.contactName,
+            nomorTelepon: formData.contactPhone
+          }
+        })
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error( result.message ||'Gagal Menyimpan Data')
+
+      if (editingCoop) {
+        setCoops(coops.map(c => c._id === editingCoop._id ? result : c))
+        toast({title: "Kandang Diperbarui", description: "Data Kandang Berhasil Diperbarui", variant: "success"})
+      } else {
+        setCoops([...coops, result]);
+        toast({title: "Kandang Ditambahkan", description: "Data Kandang Baru Berhasil Ditambahkan", variant: "success"})
+      }
+      handleCloseModal();
+    } catch (error) {
+      toast({title: "Error", description: error.message, variant: "destructive"});
     }
-    handleCloseModal();
   };
 
   const handleDelete = (id) => {
@@ -93,9 +139,14 @@ const AdminCoops = () => {
                       <Label htmlFor="capacity">Kapasitas (Ekor)</Label>
                       <Input id="capacity" type="number" value={formData.capacity} onChange={(e) => setFormData({ ...formData, capacity: e.target.value })} required />
                     </div>
+                  
                     <div>
-                      <Label htmlFor="contact">Kontak (Nama & No. HP)</Label>
-                      <Input id="contact" value={formData.contact} onChange={(e) => setFormData({ ...formData, contact: e.target.value })} required />
+                      <Label htmlFor="contactName">Nama Pemilik (Penanggung Jawab)</Label>
+                      <Input id="contact" value={formData.contactName} onChange={(e) => setFormData({ ...formData, contactName: e.target.value })} required />
+                    </div>
+                    <div>
+                      <Label htmlFor="contactPhone">Kontak No. Hp</Label>
+                      <Input id="contact" value={formData.contactPhone} onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })} required />
                     </div>
                     <div className="flex justify-end space-x-2 pt-4">
                       <Button type="button" variant="outline" onClick={handleCloseModal}>Batal</Button>
@@ -121,13 +172,13 @@ const AdminCoops = () => {
                     </thead>
                     <tbody>
                       {coops.length > 0 ? coops.map(coop => (
-                        <tr key={coop.id} className="border-b hover:bg-gray-50">
+                        <tr key={coop._id} className="border-b hover:bg-gray-50">
                           <td className="py-3 px-4">
-                            <p className="font-medium">{coop.name}</p>
-                            <p className="text-sm text-gray-500">{coop.contact}</p>
+                            <p className="font-medium">{coop.namaKandang}</p>
+                            <p className="text-sm text-gray-500">{coop.kontak.nama}: {coop.kontak.nomorTelepon}</p>
                           </td>
-                          <td className="py-3 px-4">{coop.address}</td>
-                          <td className="py-3 px-4 text-right">{Number(coop.capacity).toLocaleString('id-ID')}</td>
+                          <td className="py-3 px-4">{coop.alamat}</td>
+                          <td className="py-3 px-4 text-right">{Number(coop.kapasitas).toLocaleString('id-ID')}</td>
                           <td className="py-3 px-4">
                             <div className="flex justify-center space-x-2">
                               <Button size="sm" variant="outline" onClick={() => handleOpenModal(coop)}><Edit className="h-4 w-4" /></Button>

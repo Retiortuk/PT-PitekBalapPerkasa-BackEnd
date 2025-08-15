@@ -28,7 +28,7 @@ const AdminUsers = () => {
         });
 
         if(!response.ok) {
-          throw new Error(errorData.message ||'Gagal Mengambil Data Pengguna');
+          throw new Error('Gagal Mengambil Data Pengguna');
         }
 
         const data = await response.json();
