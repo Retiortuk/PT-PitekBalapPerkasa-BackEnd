@@ -18,6 +18,7 @@ const AdminCoops = () => {
   const [editingCoop, setEditingCoop] = useState(null);
   const [formData, setFormData] = useState({ name: '', address: '', capacity: '', contactName: '', contactPhone: '' });
   const { token } = useAuth();
+  
   useEffect(() => {
     const fetchCoops = async() => {
       if(!token) {
