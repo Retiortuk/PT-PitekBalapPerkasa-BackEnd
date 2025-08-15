@@ -86,10 +86,10 @@ const AdminCoops = () => {
 
       if (editingCoop) {
         setCoops(coops.map(c => c._id === editingCoop._id ? result : c))
-        toast({title: "Kandang Diperbarui", description: "Data Kandang Berhasil Diperbarui", variant: "success"})
+        toast({title: "Kandang Diperbarui!", description: "Data Kandang Berhasil Diperbarui", variant: "success"})
       } else {
         setCoops([...coops, result]);
-        toast({title: "Kandang Ditambahkan", description: "Data Kandang Baru Berhasil Ditambahkan", variant: "success"})
+        toast({title: "Kandang Ditambahkan!", description: "Data Kandang Baru Berhasil Ditambahkan", variant: "success"})
       }
       handleCloseModal();
     } catch (error) {
@@ -97,10 +97,21 @@ const AdminCoops = () => {
     }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus kandang ini?")) {
-      saveCoops(coops.filter(c => c.id !== id));
-      toast({ title: "Kandang Dihapus", description: "Data kandang mitra telah dihapus.", variant: "destructive" });
+      try {
+        const response = await fetch(`http://localhost:5000/kandang/${id}`, {
+          method: 'DELETE',
+          headers: {'Authorization': `Bearer ${token}`}
+        });
+
+        if(!response.ok) throw new Error('Gagal Menghapus Kandang')
+        
+        setCoops(coops.filter(c => c._id !== id));
+        toast({title: "Kandang Dihapus!", description: "Berhasil Menghapus Kandang", variant: "success"});
+      } catch (error) {
+        toast({title: "Error", description: error.message, variant: "destructive"})
+      }
     }
   };
 
@@ -182,7 +193,7 @@ const AdminCoops = () => {
                           <td className="py-3 px-4">
                             <div className="flex justify-center space-x-2">
                               <Button size="sm" variant="outline" onClick={() => handleOpenModal(coop)}><Edit className="h-4 w-4" /></Button>
-                              <Button size="sm" variant="outline" className="text-red-600 hover:bg-red-50" onClick={() => handleDelete(coop.id)}><Trash2 className="h-4 w-4" /></Button>
+                              <Button size="sm" variant="outline" className="text-red-600 hover:bg-red-50" onClick={() => handleDelete(coop._id)}><Trash2 className="h-4 w-4" /></Button>
                             </div>
                           </td>
                         </tr>
