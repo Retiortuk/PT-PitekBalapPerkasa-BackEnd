@@ -2,7 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
-import productRoutes from "./routes/productRoutes.js";
 import userRoute from "./routes/userRoute.js";
 import kandangRoutes from "./routes/kandangRoutes.js";
 import stokRoutes from "./routes/stokRoutes.js";
@@ -15,7 +14,6 @@ app.use(cors());
 app.use(express.json());
 
 // Routes nya
-app.use("/products", productRoutes);
 app.use("/users", userRoute);
 app.use("/kandang", kandangRoutes);
 app.use("/stok", stokRoutes);
