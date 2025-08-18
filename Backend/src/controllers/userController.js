@@ -113,6 +113,7 @@ export const deleteUser = async (req, res) => {
 };
 
 // -------------------- FUNGSI VERIFIKASI USER --------------------------
+// PATCH
 export const uploadKtp = async (req, res) => {
     try {
         if(!req.file) {
@@ -141,11 +142,55 @@ export const uploadKtp = async (req, res) => {
     }
 };
 
+// GET
 export const getPendingVerifications = async(req, res) => {
     try{
         const pendingUsers =  await User.find({verificationStatus: 'pending'}).select('-password');
         res.json(pendingUsers);
     } catch (err) {
         return res.status(500).json(err.message);
+    }
+};
+
+// PATCH
+export const approveVerifications =  async(req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { verificationStatus: 'approve'},
+            {new: true}
+        ).select('-password');
+
+        if(!user) {
+            return res.status(404).json({message: "User Tidak Ditemukan!"});
+        }
+        res.json({message: `Verifikasi Untuk ${user.namaLengkap} Berhasil Disetujui`});
+    } catch (err) {
+        return res.status(500).json({message: err.message});
+    }
+};
+
+// PATCH
+export const rejectVerification = async(req, res) => {
+    try {
+        const {rejectionReason} = req.body;
+        if(!rejectionReason) {
+            return res.status(400).json({message: "Penolakan Harus Diisi Dengan Alasan"})
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            {
+                verificationStatus: 'rejected',
+                rejectionReason: rejectionReason
+            },
+        ).select('-password');
+
+        if(!user) {
+            return res.status(404).json({message: "User Tidak Ditemukan"})
+        }
+        res.json({message: `Verifikasi Untuk ${user.namaLengkap} Berhasil Ditolak`})
+    } catch(err) {
+        res.status(500).json({message: err.message});
     }
 };

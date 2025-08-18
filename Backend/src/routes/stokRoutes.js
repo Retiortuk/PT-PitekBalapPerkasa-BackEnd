@@ -4,7 +4,7 @@ import { protect, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getStoks);
+router.get("/", protect, getStoks);
 router.post("/",protect, isAdmin, createStok);
 router.patch("/:id", protect, isAdmin, updateStok);
 router.delete("/:id", protect, isAdmin, deleteStok);
