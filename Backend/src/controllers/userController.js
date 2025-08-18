@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { response } from "express";
 
+
+// -------------- FUNGSI LOGIN/REGISTER/UPDATE/DELETE ---------
 // Login
 export const loginUser = async(req, res) => {
     const { email, password} = req.body;
@@ -106,5 +109,43 @@ export const deleteUser = async (req, res) => {
 
     } catch (err) {
         return res.status(500).json({message: err.message});
+    }
+};
+
+// -------------------- FUNGSI VERIFIKASI USER --------------------------
+export const uploadKtp = async (req, res) => {
+    try {
+        if(!req.file) {
+            return res.status(400).json({message: "File KTP Tidak Ditemukan!"});
+        }
+        const ktpImageUrl = `/uploads/ktp/${req.file.filename}`;
+
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                ktpImageUrl: ktpImageUrl,
+                verificationStatus: 'pending'
+            },
+            {new: true}
+        ).select('-password');
+
+        if(!user) {
+            return res.status(404).json({message: "User Tidak Ditemukan"});
+        }
+
+        res.json({
+            message: "Upload KTP Berhasil! Menunggu Verifikasi Dari Admin"
+        });
+    } catch (err) {
+        return res.status(500).json(err.message);
+    }
+};
+
+export const getPendingVerifications = async(req, res) => {
+    try{
+        const pendingUsers =  await User.find({verificationStatus: 'pending'}).select('-password');
+        res.json(pendingUsers);
+    } catch (err) {
+        return res.status(500).json(err.message);
     }
 };
